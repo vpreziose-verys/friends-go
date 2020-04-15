@@ -7,6 +7,7 @@ import (
 
 	"github.com/BethesdaNet/friends-go/internal/db/redis"
 	"github.com/BethesdaNet/friends-go/internal/metric/bio"
+	"github.com/BethesdaNet/friends-go/internal/metric/relic"
 	"github.com/BethesdaNet/friends-go/internal/provider"
 )
 
@@ -24,7 +25,7 @@ const (
 )
 
 // Open creates the presence service
-func Open(conf Config, dba *redis.Agent) (*Friends, error) {
+func Open(conf Config, dba *redis.Agent, nra *relic.Agent) (*Friends, error) {
 	if DisableSplunkLogging {
 		conf.SimpleLog = true
 	}
@@ -52,9 +53,9 @@ func Open(conf Config, dba *redis.Agent) (*Friends, error) {
 	f.Log = bio.NewLogger(nil, os.Stderr)
 
 	// if the new relic agent is not nil attach to service
-	//if nra != nil {
-	//	p.nra = nra
-	//}
+	if nra != nil {
+		f.nra = nra
+	}
 	return f, f.init()
 }
 
@@ -88,7 +89,7 @@ type Friends struct {
 
 	// nra wraps newrelics agent to handle error cases where the default agent panics
 	// when invalid keys are set causing fatal tasks
-	//nra *relic.Agent
+	nra *relic.Agent
 }
 
 // Config struct ...
@@ -109,7 +110,7 @@ type Config struct {
 	Redis redis.Config
 
 	// Relic contains settings for newrelic agent
-	//Relic relic.Config
+	Relic relic.Config
 
 	// Provider map holds onto provider configurations by name
 	Provider map[string]interface{} `json:"provider"`

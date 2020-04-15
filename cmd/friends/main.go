@@ -15,6 +15,7 @@ import (
 	"github.com/BethesdaNet/friends-go/cmd"
 	"github.com/BethesdaNet/friends-go/internal/db/redis"
 	"github.com/BethesdaNet/friends-go/internal/friends"
+	"github.com/BethesdaNet/friends-go/internal/metric/relic"
 	"github.com/BethesdaNet/friends-go/internal/provider"
 )
 
@@ -22,13 +23,12 @@ var (
 	name         = flag.String("name", "local-friends", "name of service")
 	env          = flag.String("env", "local", "env of service")
 	addr         = flag.String("addr", "localhost:10000", "address of the http listener")
-	logLevel     = flag.String("logLevel", "debug", "values: debug, info, warn, error")
 	redisAddr    = flag.String("redisAddr", "localhost:6379", "address of redis")
 	redisCluster = flag.Bool("redisCluster", true, "enable clustered redis agent")
 	identityAddr = flag.String("identityAddr", "http://localhost:10001/identity", "address of identity service")
 	identityKey  = flag.String("identityKey", "key-identity", "key for identity service")
-	serverAddr   = flag.String("validateAddr", "http://localhost:10001/serverkey", "address of serverkey service")
-	serverKey    = flag.String("validateKey", "key-server", "key for serverkey service")
+	presenceAddr = flag.String("presenceAddr", "http://localhost:10001/presence", "address of presence service")
+	presenceKey  = flag.String("presenceKey", "key-server", "key for presence service")
 	noteAddr     = flag.String("noteAddr", "http://localhost:10001/notification", "address of notification service")
 	noteKey      = flag.String("noteKey", "key-note", "key for notification service")
 	apmKey       = flag.String("apmKey", "", "apm agent license key")
@@ -51,7 +51,7 @@ func main() {
 	conf := friends.Config{
 		Name: *name, Addr: *addr, Env: *env,
 		Redis: redis.Config{Addr: strings.Split(*redisAddr, ","), Clustered: *redisCluster, TTL: -1, Retries: 3},
-		//Relic: relic.Config{Name: *name, Key: *apmKey, Enabled: *apmEnable},
+		Relic: relic.Config{Name: *name, Key: *apmKey, Enabled: *apmEnable},
 	}
 
 	// aws.Describe gathers important container, and aws-ecr meta data if available
@@ -63,8 +63,8 @@ func main() {
 	// and loaded via AWS::ECS TaskDef on spinup.
 	conf.Provider = map[string]interface{}{
 		"identity": &provider.IdentityConfig{Config: convert(*identityAddr, *identityKey), LookupURL: "/v2/lookup/identity/"},
-		//"serverkey": &provider.KeyConfig{Config: convert(*serverAddr, *serverKey), CheckURL: "/v1/system/validate-key"},
-		//"note":      &provider.NoteConfig{Config: convert(*noteAddr, *noteKey), AnnounceURL: "/v1/announcement", NoteURL: "/v1/notification"},
+		"presence": &provider.PresenceConfig{Config: convert(*presenceAddr, *presenceKey), PresenceURL: "/v1/presence", PresencePrivateURL: "/v1/presence-private"},
+		"note":     &provider.NoteConfig{Config: convert(*noteAddr, *noteKey), AnnounceURL: "/v1/announcement", NoteURL: "/v1/notification"},
 		//"storage":   &provider.StorageConfig{},
 		//"lang":      &provider.LanguageConfig{},
 	}
@@ -75,13 +75,13 @@ func main() {
 	check("dba: open:", err)
 
 	// create relic agent and check for errors from the agent on init
-	//nra, err := relic.Open(conf.Relic)
-	//check("nra: open", err)
+	nra, err := relic.Open(conf.Relic)
+	check("nra: open", err)
 
 	// create presence service with config (require), redis agent (required), and
 	// newrelic monitoring agent (not required) if not local env, service name, and
 	// valid app auth keys populated via AWS::SecretsManager
-	svc, err := friends.Open(conf, dba)
+	svc, err := friends.Open(conf, dba, nra)
 	check("svc: open", err)
 
 	r := svc.Routes()

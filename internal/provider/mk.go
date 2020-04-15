@@ -17,25 +17,25 @@ func mkIdentity(c *IdentityConfig) (Service, error) {
 	}, nil
 }
 
-//func mkKey(c *KeyConfig) (Service, error) {
-//	c.Timeout = ckTimeout(c.Timeout)
-//	return &Key{
-//		KeyConfig: *c,
-//		provider: provider{
-//			client: client.New(ckScheme(c.Addr), c.Key, c.Env, nil),
-//		},
-//	}, nil
-//}
+func mkPresence(c *PresenceConfig) (Service, error) {
+	c.Timeout = ckTimeout(c.Timeout)
+	return &Presence{
+		PresenceConfig: *c,
+		provider: provider{
+			client: client.New(ckScheme(c.Addr), c.Key, c.Env, nil),
+		},
+	}, nil
+}
 
-//func mkNote(c *NoteConfig) (Service, error) {
-//	c.Timeout = ckTimeout(c.Timeout)
-//	return &Note{
-//		NoteConfig: *c,
-//		provider: provider{
-//			client: client.New(ckScheme(c.Addr), c.Key, c.Env, nil),
-//		},
-//	}, nil
-//}
+func mkNote(c *NoteConfig) (Service, error) {
+	c.Timeout = ckTimeout(c.Timeout)
+	return &Note{
+		NoteConfig: *c,
+		provider: provider{
+			client: client.New(ckScheme(c.Addr), c.Key, c.Env, nil),
+		},
+	}, nil
+}
 
 //func mkLanguage(c *LanguageConfig) (Service, error) {
 //	c.Timeout = ckTimeout(c.Timeout)

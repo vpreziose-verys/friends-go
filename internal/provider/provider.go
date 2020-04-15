@@ -12,10 +12,10 @@ func Open(i interface{}) (Service, error) {
 	switch c := i.(type) {
 	case *IdentityConfig:
 		return mkIdentity(c)
-	//case *KeyConfig:
-	//	return mkKey(c)
-	//case *NoteConfig:
-	//	return mkNote(c)
+	case *PresenceConfig:
+		return mkPresence(c)
+	case *NoteConfig:
+		return mkNote(c)
 	//case *StorageConfig:
 	//	return mkStorage(c)
 	//case *LanguageConfig:
