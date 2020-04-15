@@ -151,7 +151,7 @@ func (f *Friends) init() error {
 		}
 	}
 	if EnableDaemon {
-		//go f.manager.run()
+		go f.manager.run()
 	}
 	return nil
 }

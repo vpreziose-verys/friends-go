@@ -28,7 +28,7 @@ type Notification struct {
 	BUID  string
 	Data  interface{}
 
-	Annouce bool
+	Announce bool
 }
 
 // Close method will be called during teardown

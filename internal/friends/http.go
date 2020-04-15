@@ -32,8 +32,6 @@ func publicRouter(f *Friends) http.Handler {
 	r := chi.NewRouter()
 
 	r.Route("/v3", func(r chi.Router) {
-		r.Get("/ping", f.GetPing)
-
 		r.Route("/friends", func(r chi.Router) {
 			r.Get("/", f.GetFriends)
 		})

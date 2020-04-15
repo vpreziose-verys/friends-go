@@ -3,6 +3,7 @@ package friends
 import (
 	"bytes"
 	"encoding/gob"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"sync"
@@ -41,16 +42,15 @@ type (
 		// platform subsystems providing functionality for each service allowing each
 		// service provider its own configuration and http client instance
 		identity *provider.Identity
-		//key      *provider.Key
-		//note     *provider.Note
-		//storage  *provider.Storage
-		//lang     *provider.Language
+		presence *provider.Presence
+		note     *provider.Note
+		storage  *provider.Storage
 
 		// account map contains accounts retrieved from identity service
 		account sync.Map
 
 		// notechan specific for provider.Note outbound msgs
-		//notes chan Notification
+		notes chan Notification
 
 		// done chan closes the managers daemon which controls channel operations
 		done chan struct{}
@@ -75,7 +75,7 @@ type (
 	Account = identity.Account
 
 	// Notification shorthand for provider.Notification
-	//Notification = provider.Notification
+	Notification = provider.Notification
 )
 
 // DefaultDaemonInterval is the minimum rate at which the background daemon sweep
@@ -85,22 +85,22 @@ const DefaultDaemonInterval = time.Second * 10
 // providers. Using one centralized routine allows for Rate limiting (bucket),
 // msg queueing for unreachable subsystems, or the ability to block all channels
 // if internal components for presence need to be reinitialized.
-//func (m *Manager) run() {
-//	hz := newTicker(DefaultDaemonInterval)
-//	defer hz.Stop()
-//	for {
-//		select {
-//		case <-m.done:
-//			return
-//		case n, ok := <-m.notes:
-//			if ok {
-//				m.deliver(n)
-//			}
-//		case <-hz.C:
-//			/* no-op */
-//		}
-//	}
-//}
+func (m *Manager) run() {
+	hz := newTicker(DefaultDaemonInterval)
+	defer hz.Stop()
+	for {
+		select {
+		case <-m.done:
+			return
+		case n, ok := <-m.notes:
+			if ok {
+				m.deliver(n)
+			}
+		case <-hz.C:
+			/* no-op */
+		}
+	}
+}
 
 // SendNotification sends note msg through manager notechan if enabled
 //func (m *Manager) SendNotification(title, buid string, data interface{}, annouce bool) {
@@ -116,14 +116,14 @@ const DefaultDaemonInterval = time.Second * 10
 //}
 
 // deliver processes inbound notifications from notes channel
-//func (m *Manager) deliver(n Notification) {
-//	b, _ := json.Marshal(n.Data)
-//	if n.Annouce {
-//		m.note.Announcement(n.Title, string(b), n.BUID, nil)
-//	} else {
-//		m.note.Notification(n.Title, string(b), n.BUID, nil)
-//	}
-//}
+func (m *Manager) deliver(n Notification) {
+	b, _ := json.Marshal(n.Data)
+	if n.Announce {
+		m.note.Announcement(n.Title, string(b), n.BUID, nil)
+	} else {
+		m.note.Notification(n.Title, string(b), n.BUID, nil)
+	}
+}
 
 /* -------------------------------------------------------------------------- */
 
@@ -423,14 +423,12 @@ func (m *Manager) addProvider(in provider.Service) error {
 	switch pt := in.(type) {
 	case *provider.Identity:
 		m.identity = pt
-		//case *provider.Key:
-		//	m.key = pt
-		//case *provider.Note:
-		//	m.note = pt
-		//case *provider.Storage:
-		//	m.storage = pt
-		//case *provider.Language:
-		//	m.lang = pt
+	case *provider.Presence:
+		m.presence = pt
+	case *provider.Note:
+		m.note = pt
+	case *provider.Storage:
+		m.storage = pt
 	}
 	return nil
 }

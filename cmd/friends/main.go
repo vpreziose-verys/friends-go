@@ -28,7 +28,7 @@ var (
 	identityAddr = flag.String("identityAddr", "http://localhost:10001/identity", "address of identity service")
 	identityKey  = flag.String("identityKey", "key-identity", "key for identity service")
 	presenceAddr = flag.String("presenceAddr", "http://localhost:10001/presence", "address of presence service")
-	presenceKey  = flag.String("presenceKey", "key-server", "key for presence service")
+	presenceKey  = flag.String("presenceKey", "key-presence", "key for presence service")
 	noteAddr     = flag.String("noteAddr", "http://localhost:10001/notification", "address of notification service")
 	noteKey      = flag.String("noteKey", "key-note", "key for notification service")
 	apmKey       = flag.String("apmKey", "", "apm agent license key")
