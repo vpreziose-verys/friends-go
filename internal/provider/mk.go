@@ -37,21 +37,13 @@ func mkNote(c *NoteConfig) (Service, error) {
 	}, nil
 }
 
-//func mkLanguage(c *LanguageConfig) (Service, error) {
-//	c.Timeout = ckTimeout(c.Timeout)
-//	return &Language{
-//		LanguageConfig: *c,
-//		provider:       provider{},
-//	}, nil
-//}
-
-//func mkStorage(c *StorageConfig) (Service, error) {
-//	c.Timeout = ckTimeout(c.Timeout)
-//	return &Storage{
-//		StorageConfig: *c,
-//		provider:      provider{},
-//	}, nil
-//}
+func mkStorage(c *StorageConfig) (Service, error) {
+	c.Timeout = ckTimeout(c.Timeout)
+	return &Storage{
+		StorageConfig: *c,
+		provider:      provider{},
+	}, nil
+}
 
 func ckScheme(addr string) string {
 	if !strings.HasPrefix(addr, "https://") {

@@ -16,10 +16,8 @@ func Open(i interface{}) (Service, error) {
 		return mkPresence(c)
 	case *NoteConfig:
 		return mkNote(c)
-	//case *StorageConfig:
-	//	return mkStorage(c)
-	//case *LanguageConfig:
-	//	return mkLanguage(c)
+	case *StorageConfig:
+		return mkStorage(c)
 	default:
 		return nil, ErrConfigInvalid
 	}

@@ -65,8 +65,7 @@ func main() {
 		"identity": &provider.IdentityConfig{Config: convert(*identityAddr, *identityKey), LookupURL: "/v2/lookup/identity/"},
 		"presence": &provider.PresenceConfig{Config: convert(*presenceAddr, *presenceKey), PresenceURL: "/v1/presence", PresencePrivateURL: "/v1/presence-private"},
 		"note":     &provider.NoteConfig{Config: convert(*noteAddr, *noteKey), AnnounceURL: "/v1/announcement", NoteURL: "/v1/notification"},
-		//"storage":   &provider.StorageConfig{},
-		//"lang":      &provider.LanguageConfig{},
+		"storage":  &provider.StorageConfig{},
 	}
 
 	// create redis agent and check for errors from the agent on init (ping) which
