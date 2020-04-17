@@ -1,4 +1,4 @@
-package friends
+package app
 
 import (
 	"net/http"

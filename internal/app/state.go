@@ -1,4 +1,4 @@
-package friends
+package app
 
 // State struct contains attributes used during client requests. Middleware will
 // add platform specific data populated from the sidecar

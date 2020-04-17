@@ -1,4 +1,4 @@
-package friends
+package app
 
 import (
 	"bytes"
@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/BethesdaNet/friends-go/internal/app/status"
 	"github.com/BethesdaNet/friends-go/internal/db/redis"
-	"github.com/BethesdaNet/friends-go/internal/friends/status"
 	"github.com/BethesdaNet/friends-go/internal/provider"
 	"github.com/BethesdaNet/friends-go/internal/provider/identity"
 )

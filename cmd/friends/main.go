@@ -13,8 +13,8 @@ import (
 	"time"
 
 	"github.com/BethesdaNet/friends-go/cmd"
+	"github.com/BethesdaNet/friends-go/internal/app"
 	"github.com/BethesdaNet/friends-go/internal/db/redis"
-	"github.com/BethesdaNet/friends-go/internal/friends"
 	"github.com/BethesdaNet/friends-go/internal/metric/relic"
 	"github.com/BethesdaNet/friends-go/internal/provider"
 )
@@ -48,7 +48,7 @@ func main() {
 
 	// create presence service configuration based cmd flags. Flag values are also
 	// loaded by the above func (cmd.ParseFlagsOrEnv) if names match as env vars
-	conf := friends.Config{
+	conf := app.Config{
 		Name: *name, Addr: *addr, Env: *env,
 		Redis: redis.Config{Addr: strings.Split(*redisAddr, ","), Clustered: *redisCluster, TTL: -1, Retries: 3},
 		Relic: relic.Config{Name: *name, Key: *apmKey, Enabled: *apmEnable},
@@ -80,7 +80,7 @@ func main() {
 	// create presence service with config (require), redis agent (required), and
 	// newrelic monitoring agent (not required) if not local env, service name, and
 	// valid app auth keys populated via AWS::SecretsManager
-	svc, err := friends.Open(conf, dba, nra)
+	svc, err := app.Open(conf, dba, nra)
 	check("svc: open", err)
 
 	r := svc.Routes()
