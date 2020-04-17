@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/BethesdaNet/friends-go/internal/db/redis"
+	"github.com/BethesdaNet/friends-go/internal/handler"
 	"github.com/BethesdaNet/friends-go/internal/metric/bio"
 	"github.com/BethesdaNet/friends-go/internal/metric/relic"
 	"github.com/BethesdaNet/friends-go/internal/provider"
@@ -56,6 +57,9 @@ func Open(conf Config, dba *redis.Agent, nra *relic.Agent) (*Friends, error) {
 	if nra != nil {
 		f.nra = nra
 	}
+
+	f.handler = &handler.Handler{f}
+
 	return f, f.init()
 }
 
@@ -68,6 +72,9 @@ type Friends struct {
 	file, path string
 	httpok     int
 	err        error
+
+	// handler
+	handler *handler.Handler
 
 	// manager brokers communications between inbound http handlers, external data
 	// providers (notifications, identity), and external data sources (redis).
@@ -126,7 +133,7 @@ type Config struct {
 	SimpleLog bool `json:"-"`
 }
 
-// Close the presence service
+// Close the friends service
 func (f *Friends) Close() {
 	close(f.manager.done)
 	close(f.done)

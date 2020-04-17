@@ -33,7 +33,7 @@ func publicRouter(f *Friends) http.Handler {
 
 	r.Route("/v3", func(r chi.Router) {
 		r.Route("/friends", func(r chi.Router) {
-			r.Get("/", f.GetFriends)
+			r.Get("/", f.handler.GetFriends)
 		})
 	})
 
