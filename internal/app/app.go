@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"encoding/gob"
+	"fmt"
 	"os"
 
 	"github.com/BethesdaNet/friends-go/internal/db/redis"
@@ -58,7 +59,8 @@ func Open(conf Config, dba *redis.Agent, nra *relic.Agent) (*Friends, error) {
 		f.nra = nra
 	}
 
-	f.handler = &handler.Handler{f}
+	//f.handler = &handler.Handler{f}
+	f.handler = handler.NewHandler(f)
 
 	return f, f.init()
 }
@@ -137,6 +139,10 @@ type Config struct {
 func (f *Friends) Close() {
 	close(f.manager.done)
 	close(f.done)
+}
+
+func (f *Friends) LogTest() {
+	fmt.Println("*** Hello there!")
 }
 
 // EnableDaemon enables background running routine

@@ -5,5 +5,6 @@ import (
 )
 
 func (h *Handler) GetFriends(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("GetFriends Yo!"))
+	h.base.LogTest()
+	w.Write([]byte("GetFriends!"))
 }

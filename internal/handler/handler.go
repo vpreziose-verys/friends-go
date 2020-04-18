@@ -1,9 +1,14 @@
 package handler
 
 type Handler struct {
-	Base
+	base
 }
 
-type Base interface {
+type base interface {
 	Close()
+	LogTest()
+}
+
+func NewHandler(base base) *Handler {
+	return &Handler{base}
 }
